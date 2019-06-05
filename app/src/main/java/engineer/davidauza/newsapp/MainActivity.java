@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,32 @@ public class MainActivity extends AppCompatActivity implements
         return new NewsLoader(MainActivity.this);
     }
 
+    @Override
+    public void onLoadFinished(@NonNull Loader<ArrayList<News>> loader, ArrayList<News> news) {
+        swipeRefreshLayout.setRefreshing(false);
+        if (news != null) {
+            // TODO resume here!
+            // TODO check!
+            // TODO method?
+            // Set up adapter to the Recycler View
+            mAdapter = new NewsAdapter(news);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<ArrayList<News>> loader) {
+
+    }
+
+    @Override
+    public void onRefresh() {
+        getSupportLoaderManager().
+                restartLoader(LOADER_ID, null, MainActivity.this);
+    }
+
     private void setUpSwipeRefreshLayout() {
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.ly_swipe_refresh_layout);
+        swipeRefreshLayout = findViewById(R.id.ly_swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(MainActivity.this);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
     }

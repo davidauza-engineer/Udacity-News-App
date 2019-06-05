@@ -74,4 +74,11 @@ public class News {
     public String getDate() {
         return mDate;
     }
+
+    /**
+     * This method returns the link of the news.
+     */
+    public String getLink() {
+        return mLink;
+    }
 }
