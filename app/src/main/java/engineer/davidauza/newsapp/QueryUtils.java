@@ -112,9 +112,8 @@ public class QueryUtils {
     }
 
     /**
-     * @param pResponse
-     * @return
-     * @throws JSONException
+     * This method retrieves the appropriate values to create News objects and adding them to an
+     * ArrayList of News.
      */
     public static ArrayList<News> parseJson(String pResponse) throws JSONException {
         ArrayList<News> newsList = new ArrayList<>();
