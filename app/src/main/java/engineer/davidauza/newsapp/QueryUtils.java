@@ -17,9 +17,15 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+/**
+ * This class contains various static methods useful to handle the communication with the Guardian
+ * API.
+ */
 public class QueryUtils {
 
-    // TODO pending check
+    /**
+     * This method builds the appropriate URL to reach the desired content in the Guardian API.
+     */
     public static URL buildUrl() {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").encodedAuthority("content.guardianapis.com").appendPath("search").
@@ -36,9 +42,13 @@ public class QueryUtils {
         }
     }
 
+    /**
+     * This method is responsible for creating the http request to the Guardian API.
+     *
+     * @param pUrl is the URL used to reach the desired content in the Guardian API.
+     */
     public static String httpRequest(URL pUrl) {
         String response = "";
-
         if (pUrl == null) {
             return response;
         } else {
@@ -47,8 +57,6 @@ public class QueryUtils {
             try {
                 connection = (HttpURLConnection) pUrl.openConnection();
                 connection.setRequestMethod("GET");
-                // TODO verify order here
-                // TODO method set connection?
                 connection.setConnectTimeout(16000);
                 connection.setReadTimeout(8000);
                 connection.connect();
@@ -67,7 +75,6 @@ public class QueryUtils {
                 if (inputStream != null) {
                     try {
                         inputStream.close();
-                        // TODO method?
                     } catch (IOException e) {
                         Log.e("QueryUtils", e.toString());
                     }
@@ -77,6 +84,9 @@ public class QueryUtils {
         }
     }
 
+    /**
+     * This method is responsible for reading the Stream and returning a String with the results.
+     */
     private static String readStream(InputStream pInputStream) {
         StringBuilder result = new StringBuilder();
         if (pInputStream != null) {
@@ -91,40 +101,51 @@ public class QueryUtils {
             }
             while (currentLine != null) {
                 result.append(currentLine);
-                // TODO method try catch
                 try {
                     currentLine = bufferedReader.readLine();
                 } catch (IOException e) {
-                    Log.e("readStream", e.toString());
+                    Log.e("QueryUtils.readStream", e.toString());
                 }
             }
         }
         return result.toString();
     }
 
+    /**
+     * @param pResponse
+     * @return
+     * @throws JSONException
+     */
     public static ArrayList<News> parseJson(String pResponse) throws JSONException {
         ArrayList<News> newsList = new ArrayList<>();
         JSONObject response = new JSONObject(pResponse);
         JSONObject results = response.getJSONObject("response");
         JSONArray jsonArray = results.getJSONArray("results");
 
+        // Loop through the JSON Array getting the current JSON object and retrieving the values to
+        // appropriately create a News object and adding it to the newsList
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject currentResult = jsonArray.getJSONObject(i);
-            String title = currentResult.getString("webTitle");
-            String section = currentResult.getString("sectionName");
+            JSONObject currentJsonObject = jsonArray.getJSONObject(i);
+            // Retrieve title
+            String title = currentJsonObject.getString("webTitle");
+            // Retrieve section name
+            String section = currentJsonObject.getString("sectionName");
+            // If the author is available, retrieve it
             String author = null;
-            JSONArray tags = currentResult.getJSONArray("tags");
+            JSONArray tags = currentJsonObject.getJSONArray("tags");
             int tagsLenght = tags.length();
             if (tagsLenght != 0) {
                 for (int j = 0; j < tagsLenght; j++) {
                     JSONObject currentObject = tags.getJSONObject(j);
-                    // TODO check this!
-                    author += currentObject.getString("webTitle");
+                    author = currentObject.getString("webTitle");
                 }
             }
-            // TODO check date format
-            String date = currentResult.getString("webPublicationDate");
-            String link = currentResult.getString("webUrl");
+            // Retrieve date and format it
+            String date = currentJsonObject.getString("webPublicationDate");
+            date = DateFormatter.format(date);
+            // Retrieve url
+            String link = currentJsonObject.getString("webUrl");
+            // Create a new News object and add it to the newsList
             newsList.add(new News(title, section, author, date, link));
         }
         return newsList;

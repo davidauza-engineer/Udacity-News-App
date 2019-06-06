@@ -24,12 +24,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.MyViewHolder> 
     private ArrayList<News> mNews;
 
     /**
+     * The context of the MainActivity
+     */
+    private Context mContext;
+
+    /**
      * Create a new {@link NewsAdapter} object.
      *
-     * @param pNews is the ArrayList containing the list of news to display.
+     * @param pNews    is the ArrayList containing the list of news to display.
+     * @param pContext is the Context of the MainActivity
      */
-    public NewsAdapter(ArrayList<News> pNews) {
+    public NewsAdapter(ArrayList<News> pNews, Context pContext) {
         mNews = pNews;
+        mContext = pContext;
     }
 
     /**
@@ -39,13 +46,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.MyViewHolder> 
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         // Create a new View
-        View view = LayoutInflater.from(viewGroup.getContext()).
+        View view = LayoutInflater.from(mContext).
                 inflate(R.layout.item_news, viewGroup, false);
         return new MyViewHolder(view);
     }
 
     /**
-     * Replace the contents of a View (invoked by the layout manager)
+     * Replace the contents of a View (invoked by the layout manager).
      */
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
@@ -54,15 +61,25 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.MyViewHolder> 
 
         // Replace the contents of the View with that element
         myViewHolder.mTitleTextView.setText(currentNews.getTitle());
-        myViewHolder.mDateTextView.setText(currentNews.getDate());
-        myViewHolder.mAuthorTextView.setText(currentNews.getAuthor());
+        String date = currentNews.getDate();
+        if (date != null) {
+            myViewHolder.mDateTextView.setText(date);
+        } else {
+            myViewHolder.mDateTextView.setText(mContext.getString(R.string.no_date));
+        }
+        String author = currentNews.getAuthor();
+        if (author != null) {
+            myViewHolder.mAuthorTextView.setText(author);
+        } else {
+            myViewHolder.mAuthorTextView.setText(mContext.getString(R.string.no_author));
+        }
         myViewHolder.mSectionTextView.setText(currentNews.getSection());
 
         setOnClickListener(myViewHolder, currentNews);
     }
 
     /**
-     * Return the size of the dataset (invoked by the layout manager)
+     * Return the size of the dataset (invoked by the layout manager).
      */
     @Override
     public int getItemCount() {
@@ -77,10 +94,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.MyViewHolder> 
         pViewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = v.getContext();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(pCurrentNews.getLink()));
-                context.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
     }

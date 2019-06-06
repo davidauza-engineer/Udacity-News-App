@@ -9,17 +9,27 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<ArrayList<News>>, SwipeRefreshLayout.OnRefreshListener {
 
+    /**
+     * This constant stores the ID of the loader.
+     */
     private static final int LOADER_ID = 0;
-    // TODO check global variables
+
+    /**
+     * The RecyclerView to display the list of news.
+     */
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+
+    /**
+     * The SwipeRefreshLayout to be able to reload the news.
+     */
     private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -28,8 +38,6 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         setUpSwipeRefreshLayout();
         setUpRecyclerView();
-        // TODO remember to create the default text view if it is not posible to load news
-        // TODO check if it is worth to create a method for this
         getSupportLoaderManager().
                 initLoader(LOADER_ID, null, MainActivity.this);
     }
@@ -44,12 +52,12 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(@NonNull Loader<ArrayList<News>> loader, ArrayList<News> news) {
         swipeRefreshLayout.setRefreshing(false);
         if (news != null) {
-            // TODO resume here!
-            // TODO check!
-            // TODO method?
+            // Hide the no data to display TextView
+            TextView noDataTextView = findViewById(R.id.txt_no_data);
+            noDataTextView.setVisibility(View.GONE);
             // Set up adapter to the Recycler View
-            mAdapter = new NewsAdapter(news);
-            mRecyclerView.setAdapter(mAdapter);
+            RecyclerView.Adapter adapter = new NewsAdapter(news, MainActivity.this);
+            mRecyclerView.setAdapter(adapter);
         }
     }
 
@@ -64,16 +72,23 @@ public class MainActivity extends AppCompatActivity implements
                 restartLoader(LOADER_ID, null, MainActivity.this);
     }
 
+    /**
+     * This method sets up the SwipeRefreshLayout.
+     */
     private void setUpSwipeRefreshLayout() {
         swipeRefreshLayout = findViewById(R.id.ly_swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(MainActivity.this);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
     }
 
+    /**
+     * This method sets up the RecyclerView.
+     */
     private void setUpRecyclerView() {
         mRecyclerView = findViewById(R.id.ly_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(MainActivity.this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(MainActivity.this);
+        mRecyclerView.setLayoutManager(layoutManager);
     }
 }

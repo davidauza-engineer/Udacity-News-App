@@ -1,10 +1,9 @@
 package engineer.davidauza.newsapp;
 
 /**
- * //TODO check this description
  * {@link News} represents a News obtained from the Guardian API.
- * It contains a title, the name of the section it belongs to, the author of the news, if available,
- * the date of the news, if available, and a link to the news on the web.
+ * It contains a title, the name of the section it belongs to, the author of the news, the date of
+ * the news, and a link to the news on the web.
  */
 public class News {
 
@@ -29,10 +28,19 @@ public class News {
     private String mDate;
 
     /**
-     * The url where the new is located.
+     * The URL where the new is located.
      */
-    private String mLink; //TODO check if a getter is needed
+    private String mLink;
 
+    /**
+     * Create a new {@link News} object.
+     *
+     * @param pTitle   is the title of the news.
+     * @param pSection is the section the news belongs to.
+     * @param pAuthor  is the author of the news.
+     * @param pDate    is the date the news has been published.
+     * @param pLink    is the URL to find the news on the web.
+     */
     public News(String pTitle,
                 String pSection,
                 String pAuthor,
@@ -40,9 +48,7 @@ public class News {
                 String pLink) {
         mTitle = pTitle;
         mSection = pSection;
-        // TODO check if present
         mAuthor = pAuthor;
-        // TODO check if present
         mDate = pDate;
         mLink = pLink;
     }

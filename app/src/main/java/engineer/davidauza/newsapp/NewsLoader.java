@@ -10,8 +10,17 @@ import org.json.JSONException;
 import java.net.URL;
 import java.util.ArrayList;
 
+/**
+ * This class is responsible for loading the News and returning an ArrayList which contains the
+ * news to display.
+ */
 public class NewsLoader extends AsyncTaskLoader<ArrayList<News>> {
 
+    /**
+     * Create a new {@link NewsLoader} object.
+     *
+     * @param pContext is the context of the MainActivity.
+     */
     public NewsLoader(Context pContext) {
         super(pContext);
     }
@@ -25,7 +34,7 @@ public class NewsLoader extends AsyncTaskLoader<ArrayList<News>> {
     @Nullable
     @Override
     public ArrayList<News> loadInBackground() {
-        // TODO check the way to manage the ArrayList
+        // Create the ArrayList which should contain the news.
         ArrayList<News> newsList = null;
         try {
             URL link = QueryUtils.buildUrl();
